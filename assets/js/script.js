@@ -2,191 +2,159 @@
 
 var questions = [
     {
-        title: "What car manufacture made the Supra", // put question
+        title: "What car manufacturer made the Supra", // put question
         choices: ['Nissan', 'Toyota', 'Acura'], // put options
-        answer: 'B'
+        answer: 'Toyota'
     },
-{
-    title: "What year was the r32 Skyline 1st manufactured?",
-    choices: ['1972', '1969', '1989'],
-    answer: 'C'
-},
-{
-    title: "What engine came in the MK4 Supra?",
-    choices: ['rb26dett', '2jzgte', 'ka24e'],
-    answer: 'B'
-},
-{
-    title: "What was the last year the r34 Skyline manufactured?",
-    choices: ['2002', '2010', '2004'],
-    answer: 'A'
-},
-{
-    title: "which car model is referred to as Godzilla?",
-    choices: ['Supra', 'Skyline Gtr', 'Civiv'],
-    answer: 'B'
-},
+    {
+        title: "What year was the r32 Skyline 1st manufactured?",
+        choices: ['1972', '1969', '1989'],
+        answer: '1989'
+    },
+    {
+        title: "What engine came in the MK4 Supra?",
+        choices: ['rb26dett', '2jzgte', 'ka24e'],
+        answer: '2jzgte'
+    },
+    {
+        title: "What was the last year the r34 Skyline manufactured?",
+        choices: ['2002', '2010', '2004'],
+        answer: '2002'
+    },
+    {
+        title: "which car model is referred to as Godzilla?",
+        choices: ['Supra', 'Skyline Gtr', 'Civiv'],
+        answer: 'Skyline Gtr'
+    },
 ];
 
 // var declaration
 
 var currentQuestionIndex = 0
+var secondQuestionIndex = 0
 
-
-var timeInterval = 6000
 var questionsEl = document.getElementById("questions");
 var choicesEl = document.getElementById("choices");
-var timerEl = document.getElementById("timer");
+var timerEl = document.getElementById("time");
 var submitBtn = document.getElementById("submit");
 var startBtn = document.getElementById("start");
 var initialsEl = document.getElementById("initials");
 var feedbackEl = document.getElementById("feedback")
-
+var endTest = document.getElementById("end-test")
+var questionTitle = document.getElementById("questions-title")
+var finalScore = document.getElementById("final-score")
+var score = 0
 // timer references
 
-var time = questions.length * 15;
-var timerId;
+var timeLeft = questions.length * 10;
+var timerInterval;
 
 function startQuiz() {
     var startScreenEl = document.getElementById("start-screen");
-    
+
     startScreenEl.setAttribute("class", "hide");
-    startBtn.addEventListener("click",startQuiz)
+   
+    nextQuestion();
+  
+    questionsEl.classList.remove('hide')
 
-    questionsEl.removeAttribute("class");
-
-    timerId = setInterval(clockTick, 6000);
-
-    timerEl.textContent = time;               
-     getQuestion();                   
-
-
-}
-
-function getQuestion(){
-    var currentQuestion = questions[currentQuestionIndex];
-
-    var titleEl = document.getElementById("question-title");
-    //titleEl.textContent = currentQuestion.title                    hh
-
-    choicesEl.innerHTML = "";
-
-    currentQuestionIndex.choices.forEach(function(choice, i) {
-        var choiceNode = document.createElement("button");
-        choiceNode.setAttribute("class", 'choice');
-        choiceNode.setAttribute("value", choice);
-
-        choiceNode.textContent = i + 1 + choice;
-
-        choiceNode.onClick = questionsClick;
-
-        choicesEl.appendChild(choiceNode);
-
-    });
-
-}
-
-
-function questionsClick(){
-    if (this.value !== questions[currentQuestionIndex]){
-        time -= 10; //change penalty time
-
-        if (time < 0){
-             time = 0;
+    timerInterval = setInterval(function () {
+        // As long as the `timeLeft` is greater than 1
+        if (timeLeft > 1) {
+            // Set the `textContent` of `timerEl` to show the remaining seconds
+            timerEl.textContent = timeLeft + ' seconds remaining';
+            // Decrement `timeLeft` by 1
+            timeLeft--;
+        } else if (timeLeft === 1) {
+            // When `timeLeft` is equal to 1, rename to 'second' instead of 'seconds'
+            timerEl.textContent = timeLeft + ' second remaining';
+            timeLeft--;
+        } else {
+            // Once `timeLeft` gets to 0, set `timerEl` to an empty string
+            timerEl.textContent = '';
+            // Use `clearInterval()` to stop the timer
+            clearInterval(timerInterval);
+            // Call the `displayMessage()` function
+            endScreen();
         }
-        timerEl.textContent = time;
-        feedbackEl.textContent = " wrong";
-
-    }else {
-        feedbackEl.textContent = "correct!";
-    }
-
-    feedbackEl.setAttribute("class", 'feedback');
-    setTimeout(function() {
-        feedbackEl.setAttribute("class", 'feedback hide');
-
-    }, 6000);
-
-    currentQuestionIndex++;
-
-    if (currentQuestionIndex === questions.length){
-        quizEnd();
-    } else {
-        getQuestion();
-    }
-}
-
-function quizEnd(){
-    clearInterval(timerId);
-
-    var endScreenEl= document.getElementById("end-screen");
-    endScreenEl.removeAttribute("class");
-
-    var finalScoreEl = document.getElementById("final-score");
-    finalScoreEl.textContent = time;
-
-    questionsEl.setAttribute("class", 'hide');
-}
-
-function clockTick() {
-    time--;
-    //timerEl.textContent = time;               hhh
-
-    if (time <= 0){
-        quizEnd();
-    }
-}
-
-function saveHighScore(){
-    var initials = initialsEl.value.trim();
-
-    if (initials !== ""){
-        var highscores = JSON.parse(window.localStorage.getItem("highscores.html")) || [];
-
-        var newScore = {
-            score:time,
-            initials: initials
-        };
-
-        highscores.push(newScore);
-        window.localStorage.setItem("highscores", JSON.stringify(highscores));
-
-        window.location.href = "highscores.html";
-    }
-
+    }, 1000);
 
 }
 
-startBtn.onclick = startQuiz;
 
-submitBtn.onclick = startQuiz
-
-
-
-
+function compareQuestion(answer) {
+    console.log(answer)
+nextQuestion()
+}
 
 
+function nextQuestion(){
+    // use cerrent question index to get question instance//
+    //update text for question title
+    // insert choices
+    // add event listeners to choices 
+    //increment current question index
+    // check if quiz is finished if so display end screen()
+    if (currentQuestionIndex >= questions.length){
+        clearInterval(timerInterval)
+        endScreen()
+        return 
+    }
+    choicesEl.innerHTML =  ""
+    var question = questions[currentQuestionIndex]
+    questionTitle.textContent = question.title
+    
+    for (let i = 0; i < question.choices.length; i++) {
+        var p = document.createElement("p")
+        p.classList.add('choice')
+        p.textContent = question.choices[i]
+        console.log(p.textContent, p)
+        p.addEventListener('click', function(e) {
+            // console.log(e.target.textContent,question.answer)
+            if (e.target.textContent === question.answer) {
+                console.log('this')
+                score += 1
+                console.log(score)
+            } 
+            finalScore.textContent= score
+        })
+        p.addEventListener('click', nextQuestion);
+        choicesEl.append(p)
+    }
+    currentQuestionIndex++ 
+}
+
+var submitButton = (function(e) {
+    // console.log(score, timeLeft, initialsEl.value)
+    localStorage.setItem(initialsEl.value, score, timeLeft)
+})
+   
 
 
 
 
-//  var timeInterval = setInterval(function () {
-//     // As long as the `timeLeft` is greater than 1
-//     if (timeLeft > 1) {
-//       // Set the `textContent` of `timerEl` to show the remaining seconds
-//       timerEl.textContent = timeLeft + ' seconds remaining';
-//       // Decrement `timeLeft` by 1
-//       timeLeft--;
-//     } else if (timeLeft === 1) {
-//       // When `timeLeft` is equal to 1, rename to 'second' instead of 'seconds'
-//       timerEl.textContent = timeLeft + ' second remaining';
-//       timeLeft--;
-//     } else {
-//       // Once `timeLeft` gets to 0, set `timerEl` to an empty string
-//       timerEl.textContent = '';
-//       // Use `clearInterval()` to stop the timer
-//       clearInterval(timeInterval);
-//       // Call the `displayMessage()` function
-//       displayMessage();
-//     }
-//   }, 6000);
+
+function endScreen() {
+    endTest.classList.remove('hide')
+    questionsEl.classList.add('hide')
+}
+
+
+
+startBtn.addEventListener("click", startQuiz);
+
+submitBtn.addEventListener('click', submitButton)
+
+
+// const element2 = document.querySelector("#sign-up");
+
+// element2.addEventListener("click", () => {
+//   console.log("element2");
+
+//   element2.classList.add("animate__animated", "animate__rotateIn");
+// });
+
+
+
+
+
